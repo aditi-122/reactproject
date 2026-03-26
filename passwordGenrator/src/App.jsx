@@ -1,3 +1,4 @@
+import { Cursor } from 'mongoose';
 import { useEffect, useRef } from 'react';
 import { useState, useCallback } from 'react'
 
@@ -6,6 +7,7 @@ function App() {
   const [numberAllowed, setNumberAllowed] = useState(false);
   const [charAllowed, setCharAllowed] = useState(false)
   const [password, setPassword] = useState(" ");
+  const [isDark, setIsDark] = useState(false);
   //ref hook
   const passwordRef = useRef(null)//if want to take anything refrence we use this hook
   const passwordGenerator = useCallback(() => {//it is use for optimization
@@ -23,12 +25,27 @@ function App() {
 
   const copyPasswordToClipboard = useCallback(() => {
     passwordRef.current?.select();
-    passwordRef.current?.setSelectionRange(0,4)//only3 value select
+    passwordRef.current?.setSelectionRange(0, 4)//only3 value select
     window.navigator.clipboard.writeText(password)
   }, [password])
   useEffect(() => {//it use to rewrite the effect
     passwordGenerator()
   }, [length, numberAllowed, charAllowed, passwordGenerator])
+  const handleClick = () => {
+    setIsDark(!isDark)
+  }
+  const handleCopyAndToggle = () => {
+    copyPasswordToClipboard()
+    handleClick()
+  }
+  const buttonStyle = {
+    backgroundColor: isDark ? "black" : "white",
+    color: isDark ? "lightblue" : "orange",
+    padding: "10px 20px",
+    border: "none",
+    borderRadius: "5px",
+    Cursor: "pointer"
+  }
   return (
     <>
       <div className='w-full max-w-md mx-auto shadow-md rounded-lg px-4 my-8 text-orange-500 bg-gray-800'>
@@ -43,7 +60,8 @@ function App() {
             ref={passwordRef}
           />
           <button
-            onClick={copyPasswordToClipboard}
+            onClick={handleCopyAndToggle}
+            style={buttonStyle}
             className=' outline-none bg-blue-700 text-white'>copy</button>
         </div>
         <div className='flex text-sm gap-x-2'>
